@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f4f4f9;
+}
+
+#search-section {
+    margin: 20px;
+    display: flex;
+}
+
+#search-bar {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+#search-button {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
+
+#movie-details {
+    margin: 20px;
+    width: 80%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.movie-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    padding: 20px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+#top-movies {
+    margin: 20px;
+    width: 80%;
+}
+
+#movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
