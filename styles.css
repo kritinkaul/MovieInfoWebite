@@ -14,6 +14,26 @@ body {
     color: #f4f4f4;
 }
 
+/* Header Styles */
+#main-header {
+    text-align: center;
+    padding: 40px 0;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    width: 100%;
+    color: #fff;
+}
+
+#main-header h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 48px;
+    margin-bottom: 5px;
+}
+
+#main-header p {
+    font-size: 18px;
+    font-weight: 300;
+}
+
 /* Search Section */
 #search-section {
     margin: 20px;
@@ -22,29 +42,35 @@ body {
 }
 
 #search-bar {
-    padding: 10px;
-    width: 300px;
+    padding: 12px 15px;
+    width: 350px;
     font-size: 16px;
     border: none;
-    border-radius: 20px;
+    border-radius: 25px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s;
+}
+
+#search-bar:focus {
+    outline: none;
+    box-shadow: 0 0 8px 2px rgba(255, 75, 43, 0.6);
 }
 
 #search-button {
-    padding: 10px 15px;
+    padding: 12px 20px;
     font-size: 16px;
     border: none;
-    border-radius: 20px;
-    background-color: #333;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
     color: white;
     cursor: pointer;
     margin-left: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s;
+    transition: transform 0.3s;
 }
 
 #search-button:hover {
-    background-color: #555;
+    transform: scale(1.05);
 }
 
 #suggestions-list {
@@ -53,7 +79,7 @@ body {
     border: 1px solid #ccc;
     max-height: 200px;
     overflow-y: auto;
-    width: 300px;
+    width: 350px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 10;
@@ -62,7 +88,7 @@ body {
 .suggestion-item {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 10px 15px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
