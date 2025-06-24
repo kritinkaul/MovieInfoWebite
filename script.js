@@ -88,6 +88,13 @@ document.getElementById('search-button').addEventListener('click', () => {
     }
 });
 
+// Trigger search when pressing Enter in the search bar
+document.getElementById('search-bar').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('search-button').click();
+    }
+});
+
 // Load top movies when the page loads
 fetchTopMovies();
 
