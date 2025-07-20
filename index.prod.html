@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Search for movies, view details, and explore top popular movies with streaming information" />
+    <meta name="keywords" content="movies, streaming, search, TMDB, entertainment" />
     <title>Movie Info Website</title>
     
     <!-- Resource hints for performance -->
@@ -11,31 +13,14 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     
-    <!-- Critical CSS inline -->
+    <!-- Critical CSS inline for above-the-fold content -->
     <style>
-        /* Critical CSS for above-the-fold content */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            display: flex; flex-direction: column; align-items: center; 
-            background: linear-gradient(to bottom, #141e30, #243b55); 
-            color: #f4f4f4; font-family: Arial, sans-serif; 
-        }
-        #search-section { margin: 20px; display: flex; justify-content: center; }
-        #search-bar { 
-            padding: 10px; width: 300px; font-size: 16px; border: none; 
-            border-radius: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-        }
-        #search-button { 
-            padding: 10px 15px; font-size: 16px; border: none; border-radius: 20px; 
-            background-color: #333; color: white; cursor: pointer; margin-left: 10px; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: background-color 0.3s; 
-        }
-        #search-button:hover { background-color: #555; }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}body{display:flex;flex-direction:column;align-items:center;background:linear-gradient(to bottom,#141e30,#243b55);color:#f4f4f4;min-height:100vh}#search-section{margin:20px;display:flex;justify-content:center;position:relative}#search-bar{padding:10px;width:300px;font-size:16px;border:none;border-radius:20px;box-shadow:0 4px 10px rgba(0,0,0,.2)}#search-button{padding:10px 15px;font-size:16px;border:none;border-radius:20px;background-color:#333;color:#fff;cursor:pointer;margin-left:10px;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:background-color .3s}#search-button:hover{background-color:#555}.loading{text-align:center;padding:20px;font-size:18px;color:#ffca28}
     </style>
     
     <!-- Non-critical CSS loaded asynchronously -->
-    <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="styles.css"></noscript>
+    <link rel="preload" href="styles.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="styles.min.css"></noscript>
     
     <!-- Fonts loaded asynchronously -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Oswald:wght@300&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -59,13 +44,15 @@
     <!-- Top Movies Section -->
     <section id="top-movies">
         <h2>Top 10 Movies</h2>
-        <div id="movie-list"></div>
+        <div id="movie-list">
+            <div class="loading">Loading movies...</div>
+        </div>
     </section>
 
     <!-- Back to Top Button -->
     <button id="back-to-top" onclick="scrollToTop()">⬆️ Back to top</button>
 
     <!-- JavaScript loaded with defer for better performance -->
-    <script src="script.js" defer></script>
+    <script src="script.min.js" defer></script>
 </body>
 </html>
