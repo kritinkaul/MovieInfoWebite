@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="w    <!-- Movie Detail Modal -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Genre Pages -->
+    <div id="genre-pages-container"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="spinner">
+        <div class="spinner-ring"></div>
+        <p>Loading cinematic magic...</p>
+    </div>h, initial-scale=1.0" />
+    <title>CineVerse - Your Ultimate Movie Experience</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                <span>CineVerse</span>
+            </div>
+            <div class="nav-links">
+                <a href="#hero" class="nav-link active">Home</a>
+                <a href="#trending" class="nav-link">Trending</a>
+                <a href="#genres" class="nav-link">Genres</a>
+                <a href="#watchlist" class="nav-link">Watchlist</a>
+            </div>
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Discover</span> Your Next
+                <br>
+                <span class="highlight">Cinematic Journey</span>
+            </h1>
+            <p class="hero-subtitle">Explore millions of movies, get personalized recommendations, and dive into the world of cinema</p>
+            
+            <!-- Enhanced Search -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-bar" placeholder="Search movies, actors, directors..." />
+                    <button id="search-button">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div id="suggestions-list" class="suggestions-dropdown"></div>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="quick-filters">
+                <button class="filter-btn active" data-filter="popular">🔥 Popular</button>
+                <button class="filter-btn" data-filter="top_rated">⭐ Top Rated</button>
+                <button class="filter-btn" data-filter="upcoming">🎬 Coming Soon</button>
+                <button class="filter-btn" data-filter="now_playing">🎭 In Theaters</button>
+            </div>
+        </div>
+        
+        <!-- Floating Movie Cards -->
+        <div class="floating-cards">
+            <div class="floating-card card-1"></div>
+            <div class="floating-card card-2"></div>
+            <div class="floating-card card-3"></div>
+        </div>
+    </section>
+
+    <!-- Featured Movie Spotlight -->
+    <section id="spotlight" class="spotlight">
+        <div class="spotlight-content">
+            <h2 class="section-title">Featured Today</h2>
+            <div id="featured-movie" class="featured-container"></div>
+        </div>
+    </section>
+
+    <!-- Movie Categories -->
+    <section id="trending" class="movies-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-fire"></i>
+                Trending Now
+            </h2>
+            <div id="movie-list" class="movie-grid"></div>
+        </div>
+    </section>
+
+    <!-- Genres Section -->
+    <section id="genres" class="genres-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-palette"></i>
+                Explore by Genre
+            </h2>
+            <div id="genres-grid" class="genres-grid"></div>
+        </div>
+    </section>
+
+    <!-- Movie Detail Modal -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button id="back-to-top" class="fab">
+        <i class="fas fa-rocket"></i>
+    </button>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

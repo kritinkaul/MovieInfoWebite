@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal - CineVerse</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="background: #0a0a0a; padding: 2rem;">
+    <h1 style="color: white; text-align: center; margin-bottom: 2rem;">Modal Test Page</h1>
+    
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button onclick="testModal(550)" style="background: #ffd700; color: #0a0a0a; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            Test with Avatar (ID: 550)
+        </button>
+        <button onclick="testModal(299536)" style="background: #ffd700; color: #0a0a0a; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            Test with Avengers (ID: 299536)
+        </button>
+        <button onclick="testModal(278)" style="background: #ffd700; color: #0a0a0a; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            Test with Shawshank (ID: 278)
+        </button>
+    </div>
+
+    <!-- Movie Detail Modal -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simplified script for testing
+        const API_KEY = 'cc5175108a6220906a5790b74539b1b9';
+        const API_URL = 'https://api.themoviedb.org/3';
+
+        const elements = {
+            modal: document.getElementById('movie-modal'),
+            modalBody: document.getElementById('modal-body'),
+            modalClose: document.querySelector('.modal-close'),
+            modalBackdrop: document.querySelector('.modal-backdrop')
+        };
+
+        // Initialize close events
+        elements.modalClose.addEventListener('click', closeModal);
+        elements.modalBackdrop.addEventListener('click', closeModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && elements.modal.style.display === 'flex') {
+                closeModal();
+            }
+        });
+
+        async function fetchFromAPI(endpoint, params = {}) {
+            const url = new URL(API_URL + endpoint);
+            url.searchParams.append('api_key', API_KEY);
+            
+            Object.entries(params).forEach(([key, value]) => {
+                url.searchParams.append(key, value);
+            });
+            
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('API Error: ' + response.status);
+            return response.json();
+        }
+
+        async function fetchMovieDetails(movieId) {
+            try {
+                const data = await fetchFromAPI('/movie/' + movieId, {
+                    append_to_response: 'credits,videos,similar'
+                });
+                return data;
+            } catch (error) {
+                console.error('Error fetching movie details:', error);
+                throw error;
+            }
+        }
+
+        function truncateText(text, maxLength) {
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        async function testModal(movieId) {
+            openMovieModal(movieId);
+        }
+
+        // Include the same modal functions from script.js
+        async function openMovieModal(movieId) {
+            try {
+                // Show loading state
+                elements.modalBody.innerHTML = `
+                    <div class="modal-loading">
+                        <div class="spinner-ring"></div>
+                        <p>Loading movie details...</p>
+                    </div>
+                `;
+                elements.modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                const movie = await fetchMovieDetails(movieId);
+                renderMovieModal(movie);
+            } catch (error) {
+                console.error('Error opening modal:', error);
+                elements.modalBody.innerHTML = `
+                    <div class="modal-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to load movie details</h3>
+                        <p>Please try again later.</p>
+                        <button onclick="closeModal()" class="retry-btn">Close</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderMovieModal(movie) {
+            const cast = movie.credits?.cast?.slice(0, 5).map(person => person.name).join(', ') || 'Cast information not available';
+            const director = movie.credits?.crew?.find(person => person.job === 'Director')?.name || 'Unknown Director';
+            const producers = movie.credits?.crew?.filter(person => person.job === 'Producer').slice(0, 2).map(person => person.name).join(', ') || 'Unknown';
+            
+            const trailer = movie.videos?.results?.find(video => video.type === 'Trailer' && video.site === 'YouTube');
+            const teaser = movie.videos?.results?.find(video => video.type === 'Teaser' && video.site === 'YouTube');
+            const mainVideo = trailer || teaser;
+            
+            // Enhanced streaming service detection (placeholder - would need real API)
+            const streamingServices = [
+                { name: 'Netflix', icon: 'fab fa-netflix', available: Math.random() > 0.5 },
+                { name: 'Prime Video', icon: 'fab fa-amazon', available: Math.random() > 0.5 },
+                { name: 'Disney+', icon: 'fab fa-disney', available: Math.random() > 0.5 },
+                { name: 'Hulu', icon: 'fas fa-tv', available: Math.random() > 0.5 },
+                { name: 'HBO Max', icon: 'fas fa-film', available: Math.random() > 0.5 }
+            ].filter(service => service.available);
+            
+            const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : 'Runtime not available';
+            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+            const voteCount = movie.vote_count ? movie.vote_count.toLocaleString() : 'N/A';
+            
+            elements.modalBody.innerHTML = `
+                <!-- Hero Section with Backdrop -->
+                <div class="modal-hero">
+                    <div class="modal-backdrop-img">
+                        <img src="https://image.tmdb.org/t/p/w1280${movie.backdrop_path || movie.poster_path}" 
+                             alt="${movie.title}" onerror="this.src='https://via.placeholder.com/1280x720/1a1a1a/666?text=No+Image'">
+                        <div class="modal-backdrop-overlay"></div>
+                    </div>
+                    
+                    <div class="modal-hero-content">
+                        <div class="modal-poster">
+                            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" 
+                                 alt="${movie.title}" onerror="this.src='https://via.placeholder.com/500x750/1a1a1a/666?text=No+Poster'">
+                            <div class="poster-rating">
+                                <i class="fas fa-star"></i>
+                                <span>${rating}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-main-info">
+                            <h1 class="modal-title">${movie.title}</h1>
+                            ${movie.tagline ? `<p class="modal-tagline">"${movie.tagline}"</p>` : ''}
+                            
+                            <div class="modal-meta">
+                                <span class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    ${new Date(movie.release_date).getFullYear() || 'N/A'}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    ${runtime}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    ${voteCount} votes
+                                </span>
+                                ${movie.adult ? '<span class="meta-item adult-rating">18+</span>' : '<span class="meta-item">All Ages</span>'}
+                            </div>
+                            
+                            <div class="modal-genres">
+                                ${movie.genres?.map(genre => `<span class="genre-pill">${genre.name}</span>`).join('') || '<span class="genre-pill">Unknown</span>'}
+                            </div>
+                            
+                            <div class="modal-actions">
+                                ${mainVideo ? `
+                                    <button class="action-btn primary" onclick="playTrailer('${mainVideo.key}')">
+                                        <i class="fas fa-play"></i>
+                                        Watch ${mainVideo.type}
+                                    </button>
+                                ` : ''}
+                                <button class="action-btn secondary" onclick="addToWatchlist(${movie.id})">
+                                    <i class="fas fa-bookmark"></i>
+                                    Add to Watchlist
+                                </button>
+                                <button class="action-btn secondary" onclick="shareMovie('${movie.title}', ${movie.id})">
+                                    <i class="fas fa-share"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Sections -->
+                <div class="modal-content-sections">
+                    <!-- Overview Section -->
+                    <section class="content-section">
+                        <h2><i class="fas fa-align-left"></i> Overview</h2>
+                        <p class="overview-text">${movie.overview || 'No overview available for this movie.'}</p>
+                    </section>
+                    
+                    <!-- Streaming Services -->
+                    ${streamingServices.length ? `
+                        <section class="content-section">
+                            <h2><i class="fas fa-tv"></i> Where to Watch</h2>
+                            <div class="streaming-services">
+                                ${streamingServices.map(service => `
+                                    <div class="streaming-item">
+                                        <i class="${service.icon}"></i>
+                                        <span>${service.name}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </section>
+                    ` : `
+                        <section class="content-section">
+                            <h2><i class="fas fa-tv"></i> Where to Watch</h2>
+                            <p class="no-streaming">Streaming information not available. Check your local theaters or rental services.</p>
+                        </section>
+                    `}
+                    
+                    <!-- Movie Details Grid -->
+                    <section class="content-section">
+                        <h2><i class="fas fa-info-circle"></i> Movie Details</h2>
+                        <div class="details-grid">
+                            <div class="detail-card">
+                                <i class="fas fa-user-tie"></i>
+                                <h4>Director</h4>
+                                <p>${director}</p>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-users"></i>
+                                <h4>Producers</h4>
+                                <p>${producers}</p>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-globe"></i>
+                                <h4>Language</h4>
+                                <p>${movie.original_language?.toUpperCase() || 'N/A'}</p>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-dollar-sign"></i>
+                                <h4>Budget</h4>
+                                <p>${movie.budget ? '$' + movie.budget.toLocaleString() : 'Not disclosed'}</p>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h4>Box Office</h4>
+                                <p>${movie.revenue ? '$' + movie.revenue.toLocaleString() : 'Not available'}</p>
+                            </div>
+                            <div class="detail-card">
+                                <i class="fas fa-building"></i>
+                                <h4>Studio</h4>
+                                <p>${movie.production_companies?.[0]?.name || 'Unknown'}</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Cast Section -->
+                    <section class="content-section">
+                        <h2><i class="fas fa-theater-masks"></i> Cast</h2>
+                        <div class="cast-grid">
+                            ${movie.credits?.cast?.slice(0, 8).map(actor => `
+                                <div class="cast-card">
+                                    <img src="https://image.tmdb.org/t/p/w185${actor.profile_path}" 
+                                         alt="${actor.name}" 
+                                         onerror="this.src='https://via.placeholder.com/185x278/1a1a1a/666?text=No+Photo'">
+                                    <h4>${actor.name}</h4>
+                                    <p>${actor.character}</p>
+                                </div>
+                            `).join('') || '<p>Cast information not available.</p>'}
+                        </div>
+                    </section>
+                    
+                    <!-- Similar Movies -->
+                    ${movie.similar?.results?.length ? `
+                        <section class="content-section">
+                            <h2><i class="fas fa-film"></i> Similar Movies</h2>
+                            <div class="similar-movies-grid">
+                                ${movie.similar.results.slice(0, 6).map(similar => `
+                                    <div class="similar-movie-card" onclick="openMovieModal(${similar.id})">
+                                        <img src="https://image.tmdb.org/t/p/w300${similar.poster_path}" 
+                                             alt="${similar.title}"
+                                             onerror="this.src='https://via.placeholder.com/300x450/1a1a1a/666?text=No+Poster'">
+                                        <div class="similar-movie-info">
+                                            <h4>${truncateText(similar.title, 25)}</h4>
+                                            <p><i class="fas fa-star"></i> ${similar.vote_average?.toFixed(1) || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </section>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function closeModal() {
+            elements.modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            elements.modal.scrollTop = 0;
+            
+            // Clear the modal content to prevent any lingering event listeners
+            if (elements.modalBody) {
+                elements.modalBody.innerHTML = '';
+            }
+        }
+
+        function addToWatchlist(movieId) {
+            alert('Added to watchlist! (This is a demo - implement your own watchlist functionality)');
+        }
+
+        function shareMovie(title, movieId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: `Check out this movie: ${title}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                const url = `${window.location.origin}${window.location.pathname}?movie=${movieId}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Movie link copied to clipboard!');
+                }).catch(() => {
+                    alert('Unable to share movie');
+                });
+            }
+        }
+
+        function playTrailer(videoKey) {
+            const trailerModal = document.createElement('div');
+            trailerModal.className = 'trailer-modal';
+            trailerModal.innerHTML = `
+                <div class="trailer-backdrop" onclick="closeTrailer()"></div>
+                <div class="trailer-container">
+                    <button class="trailer-close" onclick="closeTrailer()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="trailer-wrapper">
+                        <iframe 
+                            src="https://www.youtube.com/embed/${videoKey}?autoplay=1&rel=0&modestbranding=1" 
+                            frameborder="0" 
+                            allow="autoplay; encrypted-media" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(trailerModal);
+            document.body.style.overflow = 'hidden';
+            
+            // Animate in
+            setTimeout(() => {
+                trailerModal.classList.add('active');
+            }, 10);
+            
+            window.closeTrailer = () => {
+                trailerModal.classList.remove('active');
+                setTimeout(() => {
+                    if (document.body.contains(trailerModal)) {
+                        document.body.removeChild(trailerModal);
+                    }
+                    document.body.style.overflow = 'auto';
+                    delete window.closeTrailer;
+                }, 300);
+            };
+            
+            // Close on Escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeTrailer();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        }
+    </script>
+</body>
+</html>

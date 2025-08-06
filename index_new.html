@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineVerse - Movie Database</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0b2e, #16213e, #0f3460);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #FFD700, #ff6b35);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
+        }
+
+        .movie-poster {
+            position: relative;
+            height: 350px;
+            overflow: hidden;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            padding: 1rem;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #FFD700;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a0b2e, #16213e);
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .modal-backdrop {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 11, 46, 0.8), rgba(22, 33, 62, 0.7));
+        }
+
+        .modal-hero {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-end;
+        }
+
+        .modal-poster {
+            width: 120px;
+            height: 180px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
+        }
+
+        .modal-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700, #ff6b35);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-tagline {
+            font-style: italic;
+            color: #b0b0b0;
+            margin-bottom: 1rem;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .overview {
+            line-height: 1.8;
+            color: #b0b0b0;
+            font-size: 1.1rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .detail-card h4 {
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .similar-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .similar-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .similar-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .similar-info {
+            padding: 0.5rem;
+        }
+
+        .similar-title {
+            font-size: 0.8rem;
+            color: white;
+            margin-bottom: 0.3rem;
+        }
+
+        .similar-rating {
+            font-size: 0.7rem;
+            color: #b0b0b0;
+        }
+
+        .genre-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .genre-tag {
+            background: linear-gradient(135deg, #FFD700, #ff6b35);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #FFD700, #ff6b35);
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #FFD700;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .modal {
+                padding: 1rem;
+            }
+            
+            .modal-hero {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .modal-title {
+                font-size: 2rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-film"></i> CineVerse</h1>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <h3>Loading Movies...</h3>
+        </div>
+        
+        <div id="movies-grid" class="movies-grid" style="display: none;"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 CineVerse Starting...');
+        
+        const API_KEY = 'cc5175108a6220906a5790b74539b1b9';
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+        const BACKDROP_BASE = 'https://image.tmdb.org/t/p/w1280';
+
+        // DOM Elements
+        const loading = document.getElementById('loading');
+        const moviesGrid = document.getElementById('movies-grid');
+        const modal = document.getElementById('modal');
+        const modalBody = document.getElementById('modal-body');
+
+        // Fetch from API
+        async function fetchAPI(endpoint) {
+            const response = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`);
+            return response.json();
+        }
+
+        // Fetch movie details
+        async function fetchMovieDetails(id) {
+            const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits,videos,similar`);
+            return response.json();
+        }
+
+        // Load movies
+        async function loadMovies() {
+            try {
+                console.log('📡 Fetching movies...');
+                const data = await fetchAPI('/movie/popular');
+                console.log('🎬 Movies received:', data.results.length);
+                
+                renderMovies(data.results);
+                
+                loading.style.display = 'none';
+                moviesGrid.style.display = 'grid';
+                
+            } catch (error) {
+                console.error('❌ Error loading movies:', error);
+                loading.innerHTML = '<h3 style="color: #dc3545;">Error loading movies. Please refresh.</h3>';
+            }
+        }
+
+        // Render movies
+        function renderMovies(movies) {
+            moviesGrid.innerHTML = '';
+            
+            movies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.className = 'movie-card';
+                movieCard.onclick = () => openMovieModal(movie.id);
+                
+                movieCard.innerHTML = `
+                    <div class="movie-poster">
+                        <img src="${IMAGE_BASE}${movie.poster_path}" alt="${movie.title}" loading="lazy">
+                    </div>
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title}</div>
+                        <div class="movie-meta">
+                            <span>⭐ ${movie.vote_average.toFixed(1)}</span>
+                            <span>${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                moviesGrid.appendChild(movieCard);
+            });
+        }
+
+        // Open movie modal
+        async function openMovieModal(movieId) {
+            console.log('🎭 Opening modal for movie:', movieId);
+            
+            try {
+                // Show modal with loading
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                
+                modalBody.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <h3>Loading Movie Details...</h3>
+                    </div>
+                `;
+                
+                // Fetch movie details
+                console.log('📡 Fetching movie details...');
+                const movie = await fetchMovieDetails(movieId);
+                console.log('🎬 Movie details received:', movie.title);
+                
+                // Render modal content
+                renderModalContent(movie);
+                
+            } catch (error) {
+                console.error('❌ Error loading movie details:', error);
+                modalBody.innerHTML = `
+                    <div class="loading">
+                        <h3 style="color: #dc3545;">Error loading movie details</h3>
+                        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render modal content
+        function renderModalContent(movie) {
+            console.log('🎨 Rendering modal content for:', movie.title);
+            
+            const trailer = movie.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+            const cast = movie.credits?.cast?.slice(0, 5).map(p => p.name).join(', ') || 'N/A';
+            const crew = movie.credits?.crew?.filter(p => ['Director', 'Producer'].includes(p.job)).slice(0, 3).map(p => `${p.name} (${p.job})`).join(', ') || 'N/A';
+            
+            modalBody.innerHTML = `
+                <!-- Header -->
+                <div class="modal-header">
+                    <img src="${BACKDROP_BASE}${movie.backdrop_path || movie.poster_path}" alt="${movie.title}" class="modal-backdrop">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-hero">
+                        <div class="modal-poster">
+                            <img src="${IMAGE_BASE}${movie.poster_path}" alt="${movie.title}">
+                        </div>
+                        <div>
+                            <h1 class="modal-title">${movie.title}</h1>
+                            ${movie.tagline ? `<p class="modal-tagline">"${movie.tagline}"</p>` : ''}
+                            <div class="modal-meta">
+                                <span class="meta-tag">⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                                <span class="meta-tag">⏱ ${movie.runtime || 'N/A'} min</span>
+                                <span class="meta-tag">📅 ${movie.release_date?.split('-')[0] || 'N/A'}</span>
+                            </div>
+                            <div class="genre-tags">
+                                ${movie.genres?.map(g => `<span class="genre-tag">${g.name}</span>`).join('') || ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        ${trailer ? `<button class="btn btn-primary" onclick="playTrailer('${trailer.key}')">
+                            <i class="fas fa-play"></i> Watch Trailer
+                        </button>` : ''}
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-bookmark"></i> Add to Watchlist
+                        </button>
+                    </div>
+
+                    <!-- Overview -->
+                    <div class="section">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Overview</h2>
+                        <p class="overview">${movie.overview || 'No overview available.'}</p>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="section">
+                        <h2 class="section-title"><i class="fas fa-list"></i> Details</h2>
+                        <div class="details-grid">
+                            <div class="detail-card">
+                                <h4><i class="fas fa-globe"></i> Language</h4>
+                                <p>${movie.original_language?.toUpperCase() || 'N/A'}</p>
+                            </div>
+                            <div class="detail-card">
+                                <h4><i class="fas fa-dollar-sign"></i> Budget</h4>
+                                <p>${movie.budget ? '$' + movie.budget.toLocaleString() : 'N/A'}</p>
+                            </div>
+                            <div class="detail-card">
+                                <h4><i class="fas fa-chart-line"></i> Revenue</h4>
+                                <p>${movie.revenue ? '$' + movie.revenue.toLocaleString() : 'N/A'}</p>
+                            </div>
+                            <div class="detail-card">
+                                <h4><i class="fas fa-users"></i> Cast</h4>
+                                <p>${cast}</p>
+                            </div>
+                            <div class="detail-card">
+                                <h4><i class="fas fa-camera"></i> Crew</h4>
+                                <p>${crew}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Similar Movies -->
+                    ${movie.similar?.results?.length ? `
+                    <div class="section">
+                        <h2 class="section-title"><i class="fas fa-film"></i> Similar Movies</h2>
+                        <div class="similar-grid">
+                            ${movie.similar.results.slice(0, 6).map(s => `
+                                <div class="similar-card" onclick="openMovieModal(${s.id})">
+                                    <img src="${IMAGE_BASE}${s.poster_path}" alt="${s.title}">
+                                    <div class="similar-info">
+                                        <div class="similar-title">${s.title}</div>
+                                        <div class="similar-rating">⭐ ${s.vote_average?.toFixed(1) || 'N/A'}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            console.log('✅ Modal content rendered successfully!');
+        }
+
+        // Close modal
+        function closeModal() {
+            console.log('🔒 Closing modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Play trailer
+        function playTrailer(key) {
+            console.log('🎥 Playing trailer:', key);
+            window.open(`https://www.youtube.com/watch?v=${key}`, '_blank');
+        }
+
+        // Close modal on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+
+        // Initialize app
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🎬 DOM loaded, starting CineVerse...');
+            loadMovies();
+        });
+
+        console.log('✅ CineVerse script loaded!');
+    </script>
+</body>
+</html>

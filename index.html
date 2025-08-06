@@ -3,31 +3,320 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Movie Info Website</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Oswald:wght@300&display=swap" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="description" content="Discover your next cinematic journey with CineVerse. Search movies, explore genres, and build your watchlist with the ultimate movie experience." />
+    <meta name="keywords" content="movies, cinema, watchlist, movie search, trending movies, movie genres" />
+    <meta name="author" content="CineVerse" />
+    <title>CineVerse - Your Ultimate Movie Experience</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=2024080601" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 </head>
 <body>
-    <!-- Search Section -->
-    <section id="search-section">
-        <input type="text" id="search-bar" placeholder="Search for a movie..." />
-        <button id="search-button">Search</button>
-        <div id="suggestions-list"></div> <!-- This will hold the suggestions dropdown -->
+    <!-- Animated Background -->
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                <span>CineVerse</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#movies" class="nav-link">Movies</a>
+                <a href="#genres" class="nav-link">Genres</a>
+                <a href="#watchlist" class="nav-link">Watchlist</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-title-container">
+                <h1 class="hero-title" id="hero-title">
+                    <span class="hero-text-line">Discover Your Next</span>
+                    <span class="hero-text-line hero-highlight" id="rotating-text">Cinematic Journey</span>
+                </h1>
+                <div class="hero-title-decoration">
+                    <div class="decoration-line"></div>
+                    <i class="fas fa-film decoration-icon"></i>
+                    <div class="decoration-line"></div>
+                </div>
+            </div>
+            <p class="hero-subtitle">Explore millions of movies, create your perfect watchlist, and dive into the world of cinema</p>
+            
+            <!-- Main Search Bar -->
+            <div class="hero-search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="text" 
+                    id="hero-search-input" 
+                    class="hero-search-input" 
+                    placeholder="Search for movies, actors, directors..."
+                    aria-label="Search movies"
+                    autocomplete="off"
+                >
+                <button class="search-btn" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <!-- Search Dropdown -->
+                <div class="search-dropdown" id="search-dropdown">
+                    <div class="search-dropdown-content">
+                        <!-- Suggestions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <span class="stat-number">1M+</span>
+                    <span class="stat-label">Movies</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">500K+</span>
+                    <span class="stat-label">Actors</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">10K+</span>
+                    <span class="stat-label">Directors</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Side Movie Cards -->
+        <div class="side-movie-cards left-cards">
+            <div class="side-card card-left-1" data-movie-id=""></div>
+            <div class="side-card card-left-2" data-movie-id=""></div>
+            <div class="side-card card-left-3" data-movie-id=""></div>
+        </div>
+        
+        <div class="side-movie-cards right-cards">
+            <div class="side-card card-right-1" data-movie-id=""></div>
+            <div class="side-card card-right-2" data-movie-id=""></div>
+            <div class="side-card card-right-3" data-movie-id=""></div>
+        </div>
+        
+        <!-- Floating Movie Cards (reduced) -->
+        <div class="floating-cards">
+            <div class="floating-card card-1" data-movie-id=""></div>
+            <div class="floating-card card-2" data-movie-id=""></div>
+            <div class="floating-card card-3" data-movie-id=""></div>
+        </div>
     </section>
 
-    <!-- Movie Details Section -->
-    <section id="movie-details"></section>
-
-    <!-- Top Movies Section -->
-    <section id="top-movies">
-        <h2>Top 10 Movies</h2>
-        <div id="movie-list"></div>
+    <!-- Trending Section -->
+    <section class="trending-section">
+        <div class="trending-container">
+            <div class="trending-header">
+                <h2>🔥 Trending Now</h2>
+                <div class="auto-scroll-indicator">
+                    <span>Auto-scrolling</span>
+                    <div class="pulse-dot"></div>
+                </div>
+            </div>
+            <div class="trending-carousel-wrapper">
+                <div class="trending-track" id="trending-track">
+                    <!-- Trending movies will be loaded here -->
+                </div>
+            </div>
+        </div>
     </section>
 
-    <!-- Back to Top Button -->
-    <button id="back-to-top" onclick="scrollToTop()">⬆️ Back to top</button>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Filter Section -->
+        <section class="filter-section">
+            <!-- Quick Filters -->
+            <div class="quick-filters">
+                <button class="filter-btn active" data-filter="popular">🔥 Popular</button>
+                <button class="filter-btn" data-filter="top_rated">⭐ Top Rated</button>
+                <button class="filter-btn" data-filter="upcoming">🎬 Coming Soon</button>
+                <button class="filter-btn" data-filter="now_playing">🎭 In Theaters</button>
+            </div>
+        </section>
 
-    <script src="script.js"></script>
+        <!-- Movies Section -->
+        <section class="movies-container">
+            <h2 id="section-title" class="section-title">Popular Movies</h2>
+            <div id="movies-grid" class="movies-grid">
+                <!-- Movies will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Movie Detail Modal -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Genre Pages -->
+    <div id="genre-pages-container"></div>
+
+    <!-- Floating Action Button -->
+    <button id="back-to-top" class="fab">
+        <i class="fas fa-rocket"></i>
+    </button>
+
+    <!-- Loading Skeleton -->
+    <div id="loading-skeleton" class="loading-skeleton">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-film"></i>
+                <span>CineVerse</span>
+            </div>
+            <div class="loading-animation">
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <p>Loading your cinematic journey...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section footer-brand">
+                <div class="brand-container">
+                    <div class="logo-section">
+                        <i class="fas fa-film"></i>
+                        <h3>CineVerse</h3>
+                    </div>
+                    <p>Your ultimate movie discovery platform. Explore millions of movies, create personalized watchlists, and dive deep into the world of cinema with comprehensive movie details, ratings, and streaming information.</p>
+                    
+                    <div class="origin-story">
+                        <div class="story-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="story-content">
+                            <h5>✈️ Born at 30,000 Feet</h5>
+                            <p>Fun fact: This entire platform was coded during a layover at Las Vegas airport! Sometimes the best ideas come when you're between destinations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4><i class="fas fa-link"></i> Quick Links</h4>
+                <ul>
+                    <li><a href="#trending"><i class="fas fa-fire"></i> Trending Movies</a></li>
+                    <li><a href="#genres"><i class="fas fa-tags"></i> Movie Genres</a></li>
+                    <li><a href="#watchlist"><i class="fas fa-bookmark"></i> My Watchlist</a></li>
+                    <li><a href="#spotlight"><i class="fas fa-star"></i> Featured</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4><i class="fas fa-magic"></i> Features</h4>
+                <ul>
+                    <li><i class="fas fa-search"></i> Advanced Search & Filters</li>
+                    <li><i class="fas fa-heart"></i> Personal Watchlist</li>
+                    <li><i class="fas fa-play"></i> Streaming Information</li>
+                    <li><i class="fas fa-star"></i> Ratings & Reviews</li>
+                    <li><i class="fas fa-film"></i> Movie Details & Cast</li>
+                </ul>
+            </div>
+            
+            <div class="footer-section developer-section">
+                <h4><i class="fas fa-user-code"></i> Developer</h4>
+                <div class="developer-info">
+                    <div class="developer-card">
+                        <div class="developer-avatar">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div class="developer-details">
+                            <h5>Kritin Kaul</h5>
+                            <p class="developer-title">Full Stack Developer</p>
+                            <p class="developer-bio">Passionate about creating amazing web experiences. Always looking for new opportunities to build innovative solutions and collaborate on exciting projects.</p>
+                            
+                            <div class="contact-info">
+                                <a href="mailto:kritinkaul@gmail.com" class="contact-email">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>kritinkaul@gmail.com</span>
+                                </a>
+                            </div>
+                            
+                            <div class="developer-links">
+                                <a href="https://linkedin.com/in/kritinkaul" target="_blank" class="dev-link linkedin">
+                                    <i class="fab fa-linkedin"></i>
+                                    <span>LinkedIn</span>
+                                </a>
+                                <a href="https://github.com/kritinkaul" target="_blank" class="dev-link github">
+                                    <i class="fab fa-github"></i>
+                                    <span>GitHub</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-divider"></div>
+        
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="copyright-section">
+                    <p>&copy; 2024 CineVerse. All rights reserved.</p>
+                    <p class="made-by">Made with <i class="fas fa-heart pulse"></i> and lots of ☕ by <strong>Kritin Kaul</strong></p>
+                </div>
+                
+                <div class="api-credit">
+                    <div class="tmdb-attribution">
+                        <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB" class="tmdb-logo">
+                        <p>Powered by The Movie Database (TMDB)</p>
+                    </div>
+                </div>
+                
+                <div class="footer-cta">
+                    <p class="cta-text">Like what you see? Let's build something amazing together!</p>
+                    <a href="mailto:kritinkaul@gmail.com" class="cta-button">
+                        <i class="fas fa-paper-plane"></i>
+                        Get in Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js?v=2024080601"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
