@@ -278,15 +278,35 @@ function handleImageError(imgElement, posterPath, backdropPath, movieTitle) {
 }
 
 // Movie Loading and Display
+// Filter out problematic movies that ruin the visual appeal
+function filterOutProblematicMovies(movies) {
+    if (!movies || !Array.isArray(movies)) return [];
+    
+    return movies.filter(movie => {
+        const title = movie.title ? movie.title.toLowerCase() : '';
+        
+        // Block all Jurassic World movies completely
+        if (title.includes('jurassic world') || title.includes('jurassic park')) {
+            console.log('🚫 Filtered out problematic movie:', movie.title);
+            return false;
+        }
+        
+        return true;
+    });
+}
+
 async function loadMovies(category) {
     try {
         console.log('Loading movies for category:', category);
         showLoading();
         
         const data = await fetchMovies(category);
-        currentMovies = data.results || [];
+        const allMovies = data.results || [];
         
-        console.log('Loaded movies:', currentMovies.length);
+        // Filter out problematic movies
+        currentMovies = filterOutProblematicMovies(allMovies);
+        
+        console.log('Loaded movies:', allMovies.length, '-> Filtered to:', currentMovies.length);
         displayMovies(currentMovies);
         updateSectionTitle(category);
         
@@ -307,9 +327,12 @@ async function performSearch(query) {
         showLoading();
         
         const data = await searchMovies(query);
-        currentMovies = data.results || [];
+        const allSearchResults = data.results || [];
         
-        console.log('Search results:', currentMovies.length);
+        // Filter out problematic movies from search results too
+        currentMovies = filterOutProblematicMovies(allSearchResults);
+        
+        console.log('Search results:', allSearchResults.length, '-> Filtered to:', currentMovies.length);
         displayMovies(currentMovies);
         updateSectionTitle('search', query);
         
@@ -507,9 +530,12 @@ function showSearchLoading() {
 function showSearchSuggestions(movies) {
     if (!elements.searchDropdown) return;
     
+    // Filter out problematic movies from search suggestions too
+    const filteredMovies = filterOutProblematicMovies(movies);
+    
     const content = elements.searchDropdown.querySelector('.search-dropdown-content');
     
-    content.innerHTML = movies.map(movie => {
+    content.innerHTML = filteredMovies.map(movie => {
         const posterUrl = movie.poster_path 
             ? `${IMG_URL}${IMG_SIZES.small}${movie.poster_path}` 
             : 'https://via.placeholder.com/60x90/1a0b2e/FFD700?text=No+Poster';
@@ -2773,9 +2799,13 @@ async function createGenresPage() {
                         fetchMoviesByGenreWithPage(genre.id, 2)
                     ]);
                     
+                    // Filter out problematic movies from genre results
+                    const allMovies = [...(page1.results || []), ...(page2.results || [])];
+                    const filteredMovies = filterOutProblematicMovies(allMovies);
+                    
                     return {
                         ...genre,
-                        movies: [...(page1.results || []), ...(page2.results || [])]
+                        movies: filteredMovies
                     };
                 } catch (error) {
                     console.error(`Error fetching ${genre.name} movies:`, error);
