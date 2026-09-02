@@ -122,6 +122,12 @@ function setupEventListeners() {
     if (searchBtn) {
         searchBtn.addEventListener('click', submitHeroSearch);
     }
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', positionMobileSearchDropdown);
+        window.visualViewport.addEventListener('scroll', positionMobileSearchDropdown);
+    }
+    window.addEventListener('resize', positionMobileSearchDropdown);
     
     // Modal close events
     if (elements.modalClose) {
@@ -530,6 +536,7 @@ function showSearchLoading() {
     `;
     
     elements.searchDropdown.classList.add('active');
+    setMobileSearchOpen(true);
 }
 
 function showSearchSuggestions(movies) {
@@ -595,6 +602,7 @@ function showSearchSuggestions(movies) {
     });
     
     elements.searchDropdown.classList.add('active');
+    setMobileSearchOpen(true);
 }
 
 function showNoResults() {
@@ -610,12 +618,47 @@ function showNoResults() {
     `;
     
     elements.searchDropdown.classList.add('active');
+    setMobileSearchOpen(true);
 }
 
 function hideSearchDropdown() {
     if (elements.searchDropdown) {
         elements.searchDropdown.classList.remove('active');
+        elements.searchDropdown.style.maxHeight = '';
     }
+    setMobileSearchOpen(false);
+}
+
+function isMobileAppView() {
+    return window.matchMedia('(max-width: 768px)').matches;
+}
+
+function setMobileSearchOpen(open) {
+    document.body.classList.toggle('mobile-search-open', Boolean(open) && isMobileAppView());
+    if (open && isMobileAppView()) {
+        requestAnimationFrame(positionMobileSearchDropdown);
+    }
+}
+
+function positionMobileSearchDropdown() {
+    const dropdown = elements.searchDropdown;
+    const input = elements.searchInput;
+    if (!dropdown || !input || !dropdown.classList.contains('active') || !isMobileAppView()) {
+        return;
+    }
+
+    const inputRect = input.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportBottom = viewport
+        ? viewport.height + viewport.offsetTop
+        : window.innerHeight;
+    const keyboardLikelyOpen = viewport && viewport.height < window.innerHeight * 0.8;
+    const tabBar = document.querySelector('.mobile-tab-bar');
+    const tabReserve = (!keyboardLikelyOpen && tabBar)
+        ? tabBar.getBoundingClientRect().height + 8
+        : 10;
+    const available = Math.floor(viewportBottom - inputRect.bottom - tabReserve);
+    dropdown.style.maxHeight = Math.max(120, available) + 'px';
 }
 
 function handleFilterClick(e) {
@@ -3037,12 +3080,16 @@ function handleSearchKeydown(e) {
 }
 
 function handleSearchFocus(e) {
+    if (isMobileAppView()) {
+        setMobileSearchOpen(true);
+    }
     const query = e.target.value.trim();
     if (query) {
         // Show existing suggestions if there are any
         const dropdown = elements.searchDropdown;
         if (dropdown && dropdown.querySelector('.search-dropdown-content').children.length > 0) {
             dropdown.classList.add('active');
+            setMobileSearchOpen(true);
         }
     }
 }

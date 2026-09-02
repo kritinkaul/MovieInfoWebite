@@ -1,5 +1,5 @@
 // CineVerse service worker — network-first so GitHub Pages updates show up
-const CACHE_NAME = 'cineverse-mobile-v1';
+const CACHE_NAME = 'cineverse-mobile-v2';
 const urlsToCache = [
   './',
   './index.html',

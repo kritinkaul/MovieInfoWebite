@@ -4085,6 +4085,7 @@ span[style*="position: absolute"],
         margin-top: calc(var(--mobile-header-height) + env(safe-area-inset-top, 0px));
         padding: 1.6rem 1rem 1.4rem;
         justify-content: flex-start;
+        overflow: visible; /* dropdown sits below the search bar */
     }
 
     .hero-title {
@@ -4110,6 +4111,7 @@ span[style*="position: absolute"],
         width: 100%;
         max-width: none;
         margin: 0 0 0.25rem;
+        z-index: 1600;
     }
 
     .hero-search-input {
@@ -4498,7 +4500,53 @@ span[style*="position: absolute"],
     }
 
     .search-dropdown {
-        max-height: min(55vh, 360px);
+        top: calc(100% - 4px);
+        max-height: min(42vh, 280px);
+        border-radius: 0 0 16px 16px;
+        z-index: 1600;
+        background: rgba(12, 8, 22, 0.98);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .search-dropdown.active {
+        transform: none;
+    }
+
+    .search-dropdown-content {
+        padding: 6px 0;
+    }
+
+    .search-suggestion {
+        padding: 10px 12px;
+        margin: 0 4px;
+    }
+
+    .search-suggestion-poster {
+        width: 36px;
+        height: 54px;
+        margin-right: 10px;
+        border-radius: 8px;
+    }
+
+    .search-suggestion-title {
+        font-size: 0.92rem;
+    }
+
+    .search-loading,
+    .search-no-results {
+        padding: 16px 12px;
+        gap: 8px;
+    }
+
+    /* Give the suggestion list room when the keyboard is open */
+    body.mobile-search-open .hero-title-container,
+    body.mobile-search-open .hero-subtitle {
+        display: none;
+    }
+
+    body.mobile-search-open .hero {
+        padding-top: 0.75rem;
+        padding-bottom: 0.5rem;
     }
 }
 
