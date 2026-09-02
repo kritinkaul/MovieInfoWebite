@@ -658,7 +658,8 @@ function positionMobileSearchDropdown() {
         ? tabBar.getBoundingClientRect().height + 8
         : 10;
     const available = Math.floor(viewportBottom - inputRect.bottom - tabReserve);
-    dropdown.style.maxHeight = Math.max(120, available) + 'px';
+    const cap = keyboardLikelyOpen ? available : Math.min(available, 280);
+    dropdown.style.maxHeight = Math.max(120, cap) + 'px';
 }
 
 function handleFilterClick(e) {
