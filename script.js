@@ -112,11 +112,16 @@ function setupEventListeners() {
         btn.addEventListener('click', handleFilterClick);
     });
     
-    // Navigation links
-    const navLinks = document.querySelectorAll('.nav-link');
+    // Navigation links (desktop top nav + mobile tab bar)
+    const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', handleNavigation);
     });
+
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', submitHeroSearch);
+    }
     
     // Modal close events
     if (elements.modalClose) {
@@ -326,7 +331,7 @@ async function performSearch(query) {
         console.log('Searching for:', query);
         showLoading();
         
-        const data = await searchMovies(query);
+        const data = await fetchFromAPI('/search/movie', { query });
         const allSearchResults = data.results || [];
         
         // Filter out problematic movies from search results too
@@ -633,14 +638,36 @@ function handleFilterClick(e) {
     loadMovies(filter);
 }
 
+function setActiveNav(href) {
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === href);
+    });
+}
+
+function submitHeroSearch() {
+    const query = elements.searchInput?.value.trim();
+    if (!query) {
+        elements.searchInput?.focus();
+        return;
+    }
+    hideSearchDropdown();
+    showHomePage();
+    performSearch(query);
+    elements.searchInput?.blur();
+    const moviesSection = document.getElementById('movies-grid');
+    if (moviesSection) {
+        moviesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
 // Navigation handler
 function handleNavigation(e) {
     e.preventDefault();
-    const href = e.target.getAttribute('href');
+    const link = e.currentTarget;
+    const href = link.getAttribute('href');
     
-    // Update active nav state
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    e.target.classList.add('active');
+    setActiveNav(href);
+    hideSearchDropdown();
     
     switch(href) {
         case '#home':
@@ -1849,9 +1876,15 @@ function showHomePage() {
     document.querySelector('.hero').style.display = 'flex';
     document.querySelector('.trending-section').style.display = 'block';
     document.querySelector('.main-content').style.display = 'block';
+    const footer = document.querySelector('.footer');
+    if (footer) {
+        footer.style.display = '';
+    }
     hideMoviesPage();
     hideGenresPage();
     hideWatchlistPage();
+    setActiveNav('#home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showMoviesPage() {
@@ -1866,14 +1899,15 @@ function showMoviesPage() {
     if (trending) trending.style.display = 'none';
     if (mainContent) mainContent.style.display = 'none';
     
-    // Show footer
+    // Let CSS decide footer visibility (hidden on mobile app shell)
     const footer = document.querySelector('.footer');
     if (footer) {
-        footer.style.display = 'block';
+        footer.style.display = '';
     }
     
     hideGenresPage();
     hideWatchlistPage();
+    setActiveNav('#movies');
     
     console.log('Creating movies page...');
     createMoviesPage();
@@ -1885,14 +1919,14 @@ function showGenresPage() {
     document.querySelector('.trending-section').style.display = 'none';
     document.querySelector('.main-content').style.display = 'none';
     
-    // Show footer
     const footer = document.querySelector('.footer');
     if (footer) {
-        footer.style.display = 'block';
+        footer.style.display = '';
     }
     
     hideMoviesPage();
     hideWatchlistPage();
+    setActiveNav('#genres');
     
     // Show or create genres page
     let genresPageContainer = document.getElementById('genres-page-container');
@@ -1912,14 +1946,14 @@ function showWatchlistPage() {
     document.querySelector('.trending-section').style.display = 'none';
     document.querySelector('.main-content').style.display = 'none';
     
-    // Hide footer
     const footer = document.querySelector('.footer');
     if (footer) {
-        footer.style.display = 'none';
+        footer.style.display = '';
     }
     
     hideMoviesPage();
     hideGenresPage();
+    setActiveNav('#watchlist');
     
     // Create or show watchlist page
     let watchlistContainer = document.getElementById('watchlist-page-container');
@@ -2948,7 +2982,13 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 
 function handleSearchKeydown(e) {
     const dropdown = elements.searchDropdown;
-    if (!dropdown || !dropdown.classList.contains('active')) return;
+    if (!dropdown || !dropdown.classList.contains('active')) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitHeroSearch();
+        }
+        return;
+    }
     
     const suggestions = dropdown.querySelectorAll('.search-suggestion');
     let currentSelected = dropdown.querySelector('.search-suggestion.selected');
@@ -2984,6 +3024,8 @@ function handleSearchKeydown(e) {
                 hideSearchDropdown();
                 elements.searchInput.value = suggestions[0].querySelector('.search-suggestion-title').textContent;
                 openMovieModal(movieId);
+            } else {
+                submitHeroSearch();
             }
             break;
             

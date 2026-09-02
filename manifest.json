@@ -2,10 +2,11 @@
   "name": "CineVerse - Your Ultimate Movie Experience",
   "short_name": "CineVerse",
   "description": "Discover your next cinematic journey with CineVerse",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#1a0b2e",
-  "theme_color": "#1a0b2e",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -22,4 +23,4 @@
   "categories": ["entertainment", "movies", "media"],
   "lang": "en",
   "dir": "ltr"
-} 
+}
